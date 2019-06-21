@@ -2,7 +2,7 @@ const webpack = require("webpack");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-// const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const vendorCode = ["react", "react-dom"];
 
@@ -13,8 +13,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "build"),
-    filename: "js/[name].[chunkhash].js",
-    publicPath: "./"
+    filename: "js/[name].[chunkhash].js"
+    // publicPath: "build/"
   },
   module: {
     rules: [
@@ -25,15 +25,9 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [
-          { loader: "style-loader/url" },
-          {
-            loader: "file-loader",
-            options: {
-              name: "[name].[ext]"
-            }
-          }
-        ]
+        use: ExtractTextPlugin.extract({
+          use: "css-loader"
+        })
       }
     ]
   },
@@ -42,7 +36,8 @@ module.exports = {
       template: path.resolve(__dirname, "public", "index.html"),
       filename: "./index.html"
     }),
-    new CleanWebpackPlugin()
+    new CleanWebpackPlugin(),
+    new ExtractTextPlugin("css/style.css")
   ],
   optimization: {
     splitChunks: {
